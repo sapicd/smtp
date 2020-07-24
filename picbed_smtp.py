@@ -9,10 +9,10 @@
     :license: BSD 3-Clause, see LICENSE for more details.
 """
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __author__ = 'staugur <staugur@saintic.com>'
 __hookname__ = 'picbed-smtp'
-__description__ = '通过SMTP服务发送邮件'
+__description__ = '通过SMTP发送邮件'
 
 from utils.tool import Mailbox, mail_pat
 from flask import g
@@ -42,22 +42,92 @@ intpl_emailsetting = '''
                 <div class="layui-inline">
                     <label class="layui-form-label" style="width: auto;">SMTP</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="email_smtp_server"
+                        <input type="text" name="email_smtp_server" id="render_email_server"
                             value="{{ g.site.email_smtp_server }}" placeholder="SMTP服务器域名:端口(默认25)"
-                            autocomplete="off" class="layui-input" list="smtps">
-                        <datalist id="smtps">
-                            <option value="smtp.qq.com:465">QQ邮箱</option>
-                            <option value="smtp.exmail.qq.com:465">腾讯企业邮箱</option>
-                            <option value="smtp.163.com:995">网易163邮箱</option>
-                            <option value="smtp.ym.163.com:994">网易免费企业邮箱</option>
-                            <option value="smtp.gmail.com:465">Gmail</option>
-                        </datalist>
+                            autocomplete="off" class="layui-input">
                     </div>
                 </div>
             </div>
         </div>
     </fieldset>
 </div>
+'''
+
+intpl_adminscript = '''
+<script>
+    layui.use(['tableSelect', 'jquery'], function () {
+        var $ = layui.jquery,
+            tableSelect = layui.tableSelect;
+
+        function renderEmailSelect() {
+            var elem = "#render_email_server",
+                selectd = "{{ g.site.email_smtp_server }}";
+            let data = [{
+                    value: "smtp.qq.com:465",
+                    title: "QQ邮箱",
+                    href: "https://mail.qq.com",
+                },
+                {
+                    value: "smtp.exmail.qq.com:465",
+                    title: "腾讯企业邮",
+                    href: "https://exmail.qq.com/",
+                },
+                {
+                    value: "smtp.163.com:995",
+                    title: "网易163邮箱",
+                    href: "https://mail.163.com",
+                },
+                {
+                    value: "smtp.ym.163.com:994",
+                    title: "网易免费企业邮",
+                    href: "http://ym.163.com",
+                },
+                {
+                    value: "",
+                    title: "更多邮箱请手动输入",
+                },
+            ];
+            if (selectd) {
+                $(elem).attr("ts-selected", selectd);
+            }
+            tableSelect.render({
+                elem: elem,
+                checkedKey: 'value',
+                selectText: '确认选择',
+                table: {
+                    data: data,
+                    page: false,
+                    size: 'sm',
+                    cols: [
+                        [{
+                            type: "radio"
+                        }, {
+                            field: "title",
+                            title: "邮箱",
+                            templet: function(d) {
+                                return d.href ? (
+                                    '<a href="' + d.href + '" target="_blank">' + d.title + '</a>'
+                                ) : d.title;
+                            }
+                        }, {
+                            field: "value",
+                            title: "SMTP",
+                        }]
+                    ]
+                },
+                done: function (e, data) {
+                    var NEWJSON = [];
+                    layui.each(data.data, function (index, item) {
+                        NEWJSON.push(item.LinkToken);
+                    });
+                    $(elem).val(NEWJSON.join(","));
+                }
+            });
+        }
+
+        renderEmailSelect()
+    });
+</script>
 '''
 
 
