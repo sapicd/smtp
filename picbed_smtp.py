@@ -9,7 +9,7 @@
     :license: BSD 3-Clause, see LICENSE for more details.
 """
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 __author__ = 'staugur <staugur@saintic.com>'
 __hookname__ = 'picbed-smtp'
 __description__ = '通过SMTP发送邮件'
@@ -60,7 +60,7 @@ intpl_adminscript = '''
         function renderEmailSelect() {
             var elem = "#render_email_server",
                 selectd = "{{ g.site.email_smtp_server }}";
-            let data = [{
+            let list = [{
                     value: "smtp.qq.com:465",
                     title: "QQ邮箱",
                     href: "https://mail.qq.com",
@@ -93,7 +93,7 @@ intpl_adminscript = '''
                 checkedKey: 'value',
                 selectText: '确认选择',
                 table: {
-                    data: data,
+                    data: list,
                     page: false,
                     size: 'sm',
                     cols: [
@@ -116,7 +116,7 @@ intpl_adminscript = '''
                 done: function (e, data) {
                     var NEWJSON = [];
                     layui.each(data.data, function (index, item) {
-                        NEWJSON.push(item.LinkToken);
+                        NEWJSON.push(item.value);
                     });
                     $(elem).val(NEWJSON.join(","));
                 }
